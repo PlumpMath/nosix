@@ -15,4 +15,16 @@ _mboot:
 
 .globl _start
 _start:
-	jmp _start
+	// clear interrupts, set up our stack, and call our c code.
+	cli
+	movl $0x0,%ebp
+	movl $_boot_stack, %esp
+	call main
+hang$:
+	// If main returns, just sit here.
+	jmp hang$
+
+.bss
+.align 16
+.space 4096 
+_boot_stack:
