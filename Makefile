@@ -6,11 +6,12 @@ CFLAGS=\
 	-nostdlib\
 	-fno-builtin\
 	-ffreestanding\
-	-Wall -std=c99 -pedantic\
+	-Wall -pedantic\
 	-O2
 OBJS=\
 	boot.o\
-	main.o
+	main.o\
+	serial.o
 TARG=kernel
 
 $(TARG): $(OBJS) link.ld
