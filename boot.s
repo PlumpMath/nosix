@@ -1,10 +1,13 @@
 // various multiboot related constants:
 
+// flags:
+.set mboot_meminfo, (1<<1)
+
 // multiboot magic value:
 .set mboot_magic, 0x1badb002
 
 // flags we're using, and our checksum:
-.set mboot_flags, 0
+.set mboot_flags, mboot_meminfo
 .set mboot_checksum, -(mboot_magic + mboot_flags)
 
 .globl _mboot
@@ -19,6 +22,10 @@ _start:
 	cli
 	movl $0x0,%ebp
 	movl $_boot_stack, %esp
+	// pass a pointer to the multiboot info to main().
+	// TODO: gcc reqires 16 byte stack alignment; should we be
+	// adjusting where our stack is so that this doesn't throw it off?
+	pushl %ebx
 	call main
 hang$:
 	// If main returns, just sit here.
