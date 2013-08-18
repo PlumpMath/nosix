@@ -11,6 +11,7 @@
 .set mboot_checksum, -(mboot_magic + mboot_flags)
 
 .globl _mboot
+.align 4
 _mboot:
 	.int mboot_magic
 	.int mboot_flags
