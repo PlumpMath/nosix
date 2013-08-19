@@ -23,7 +23,9 @@
 #define MODEM_STATUS_REG 6
 #define SCRATCH_REG 7
 
-void serial_init(uint16_t port) {
+serial_out_t serial_init(uint16_t port) {
+	serial_out_t ret;
+
 	out8(port+INT_ENABLE, 0); /* disable interrupts on the device. */
 	out8(port+LINE_CNTL_REG, DLAB_SET); /* enable DLAB */
 	/* set baud rate divisor: */
@@ -31,9 +33,14 @@ void serial_init(uint16_t port) {
 	out8(port+BAUD_DIV_MSB, 0x0);
 	/* clear DLAB, ask for 8 bit chars with no pairty: */
 	out8(port+LINE_CNTL_REG, DLAB_CLEAR | DATABITS_8 | NO_PARITY);
+
+	ret.out.putc = serial_putc;
+	ret.port = port;
+	return ret;
 }
 
-void serial_putc(uint16_t port, uint8_t byte) {
-	while(!(in8(port+LINE_STATUS_REG) & LINE_READY_STATUS));
-	out8(port, byte);
+void serial_putc(output_t *port, uint8_t byte) {
+	serial_out_t *out = (serial_out_t*)port;
+	while(!(in8(out->port+LINE_STATUS_REG) & LINE_READY_STATUS));
+	out8(out->port, byte);
 }

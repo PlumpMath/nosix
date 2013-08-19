@@ -1,24 +1,38 @@
 #include "multiboot.h"
 #include "serial.h"
 
-/* TODO: find a good place for this. we'll want more formatted io routines
- * eventually, this should be located with the rest of them. */
-void print_hex32(uint16_t port, uint32_t n) {
-	uint32_t mask = 0x10000000;
-	int i;
-	uint8_t digit;
-	for(i = 0; i < 8; i++) {
-		digit = "0123456789abcdef"[n/mask];
-		serial_putc(port, digit);
-		n %= mask;
-		mask /= 0x10;
+static
+void print_mmap(uint32_t addr, uint32_t len) {
+	uint32_t size;
+	mmap_t *mmap;
+
+	mmap = (mmap_t*)addr;
+	for(;;){
+		size = *(((uint32_t*)mmap)-1);
+		klogf(KLOG_DEBUG, "%c %p : %p\n",
+			(mmap->type == 1)? 'A' : 'R',
+			mmap->base_addr,
+			mmap->length);
+		if(len <= size) {
+			break;
+		}
+		mmap = (mmap_t*)(((uintptr_t)mmap)+size);
+		len -= size;
 	}
 }
 
+static
+serial_out_t com1;
+
 void main(mboot_info_t *mboot) {
-	serial_init(COM1);
-	print_hex32(COM1, mboot->mem_lower);
-	serial_putc(COM1, '\n');
-	print_hex32(COM1, mboot->mem_upper);
-	serial_putc(COM1, '\n');
+	com1 = serial_init(COM1);
+	stdklog = (output_t*)&com1;
+	klogf(KLOG_DEBUG, "%p\n", mboot->flags);
+	klogf(KLOG_DEBUG, "%p\n", mboot->mem_lower);
+	klogf(KLOG_DEBUG, "%p\n", mboot->mem_upper);
+/*	print_mmap(mboot->mmap_addr, mboot->mmap_length); */
+
+	klogf(KLOG_DEBUG, "\n");
+	klogf(KLOG_DEBUG, "Should print 0xdeadbaba : %p\n", 0xdeadbaba);
+	klogf(KLOG_DEBUG, "Should print 0x0000017f : %p\n", 0x17f);
 }

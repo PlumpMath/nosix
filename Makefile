@@ -9,12 +9,15 @@ TARG=kernel
 CFLAGS=\
 	-nostdlib\
 	-ffreestanding\
+	-DLOGLEVEL=KLOG_DEBUG\
 	-Wall -pedantic\
+	-Wno-long-long\
 	-O2 -g3
 OBJS=\
 	boot.o\
 	main.o\
-	serial.o
+	serial.o\
+	klog.o
 LIBS=\
 	-lgcc
 
