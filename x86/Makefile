@@ -19,7 +19,8 @@ CFLAGS:=\
 OBJS:=\
 	boot.o\
 	main.o\
-	serial.o
+	serial.o\
+	gdt.o
 LIBS:=\
 	-lgcc
 include $(TOP)/port/Makefile
