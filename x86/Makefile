@@ -9,10 +9,11 @@ LD := $(TOOLCHAIN)-ld
 
 TARG:=kernel
 CFLAGS:=\
+	-std=gnu99\
 	-nostdlib\
 	-ffreestanding\
 	-DLOGLEVEL=KLOG_DEBUG\
-	-Wall -pedantic\
+	-Wall \
 	-Wno-long-long\
 	-O2 -g3\
 	-I. -I$(TOP)/port
@@ -20,7 +21,8 @@ OBJS:=\
 	boot.o\
 	main.o\
 	serial.o\
-	gdt.o
+	gdt.o\
+	gdt_load.o
 LIBS:=\
 	-lgcc
 include $(TOP)/port/Makefile

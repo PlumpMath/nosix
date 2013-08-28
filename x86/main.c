@@ -1,6 +1,8 @@
 #include "multiboot.h"
 #include "serial.h"
+#include "gdt.h"
 
+#if 0
 static
 void print_mmap(uint32_t addr, uint32_t len) {
 	uint32_t size;
@@ -20,11 +22,13 @@ void print_mmap(uint32_t addr, uint32_t len) {
 		len -= size;
 	}
 }
+#endif
 
 static
 serial_out_t com1;
 
 void main(mboot_info_t *mboot) {
+	gdt_init();
 	com1 = serial_init(COM1);
 	stdklog = (output_t*)&com1;
 	klogf(KLOG_DEBUG, "%p\n", mboot->flags);
